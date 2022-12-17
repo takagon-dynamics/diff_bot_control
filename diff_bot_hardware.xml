@@ -1,0 +1,9 @@
+<library path="diff_bot_control">
+  <class name="diff_bot_control/DiffBotHardware"
+         type="diff_bot_control::DiffBotHardware"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      A Diff Bot hardware plugin for the ros2_control.
+    </description>
+  </class>
+</library>
