@@ -41,31 +41,33 @@ def generate_launch_description():
             "diff_bot_controllers.yaml",
         ]
     )
-    # rviz_config_file = PathJoinSubstitution(
-    #     [FindPackageShare("diffbot_description"), "config", "diffbot.rviz"]
-    # )
+
+    rviz_config_file = PathJoinSubstitution(
+        [FindPackageShare("diff_bot_control"), "config",
+         "diff_bot_control.rviz"]
+    )
 
     control_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
         parameters=[robot_description, robot_controllers],
         output="both",
+        remappings=[
+            ("~/cmd_vel_unstamped", "/cmd_vel"),
+        ],
     )
     robot_state_pub_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
         output="both",
         parameters=[robot_description],
-        remappings=[
-            ("/diff_drive_controller/cmd_vel_unstamped", "/cmd_vel"),
-        ],
     )
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",
         name="rviz2",
         output="log",
-        # arguments=["-d", rviz_config_file],
+        arguments=["-d", rviz_config_file],
     )
 
     joint_state_broadcaster_spawner = Node(
@@ -78,7 +80,7 @@ def generate_launch_description():
     robot_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["diffbot_base_controller", "-c", "/controller_manager"],
+        arguments=["diff_bot_controller", "-c", "/controller_manager"],
     )
 
     delay_rviz_after_joint_state_broadcaster_spawner = RegisterEventHandler(
