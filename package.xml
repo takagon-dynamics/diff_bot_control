@@ -9,8 +9,10 @@
 
   <buildtool_depend>ament_cmake_auto</buildtool_depend>
 
-  <depend>diff_bot_description</depend>
   <depend>controller_manager</depend>
+  <depend>diff_bot_description</depend>
+  <depend>robot_state_publisher</depend> 
+  <depend>ros2_control</depend>
   <depend>ros2_controllers</depend>
   <depend>pluginlib</depend>
 
@@ -19,6 +21,5 @@
 
   <export>
     <build_type>ament_cmake</build_type>
-     <!-- <diff_bot_control plugin="${prefix}/diff_bot_hardware.xml"/> -->
   </export>
 </package>
