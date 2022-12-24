@@ -21,14 +21,16 @@ from launch.substitutions import Command, FindExecutable, LaunchConfiguration, P
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
+import time
+
 
 def generate_launch_description():
 
-    open_rviz = LaunchConfiguration('rviz')
+    open_rviz = LaunchConfiguration('open_rviz', default='false')
 
     declare_open_rviz_cmd = DeclareLaunchArgument(
-        'rviz',
-        default_value='false',
+        'open_rviz',
+        default_value=open_rviz,
         description='Open rviz2 if true')
 
     robot_description_content = Command(
@@ -119,7 +121,7 @@ def generate_launch_description():
 
     ld = LaunchDescription()
 
-    ld.add_action(nodes)
     ld.add_action(declare_open_rviz_cmd)
+    ld.add_action(nodes)
 
     return ld
