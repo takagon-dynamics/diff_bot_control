@@ -13,15 +13,24 @@
 # limitations under the License.
 
 from launch import LaunchDescription
-from launch.actions import RegisterEventHandler
+from launch.actions import DeclareLaunchArgument, GroupAction, RegisterEventHandler
+from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessExit
-from launch.substitutions import Command, FindExecutable, PathJoinSubstitution
+from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
+
+    open_rviz = LaunchConfiguration('rviz')
+
+    declare_open_rviz_cmd = DeclareLaunchArgument(
+        'rviz',
+        default_value='false',
+        description='Open rviz2 if true')
+
     robot_description_content = Command(
         [
             PathJoinSubstitution([FindExecutable(name="xacro")]),
@@ -63,6 +72,7 @@ def generate_launch_description():
         parameters=[robot_description],
     )
     rviz_node = Node(
+        condition=IfCondition(open_rviz),
         package="rviz2",
         executable="rviz2",
         name="rviz2",
@@ -97,12 +107,19 @@ def generate_launch_description():
         )
     )
 
-    nodes = [
-        control_node,
-        robot_state_pub_node,
-        joint_state_broadcaster_spawner,
-        delay_rviz_after_joint_state_broadcaster_spawner,
-        delay_robot_controller_spawner_after_joint_state_broadcaster_spawner,
-    ]
+    nodes = GroupAction(
+        actions=[
+            control_node,
+            robot_state_pub_node,
+            joint_state_broadcaster_spawner,
+            delay_rviz_after_joint_state_broadcaster_spawner,
+            delay_robot_controller_spawner_after_joint_state_broadcaster_spawner,
+        ]
+    )
 
-    return LaunchDescription(nodes)
+    ld = LaunchDescription()
+
+    ld.add_action(nodes)
+    ld.add_action(declare_open_rviz_cmd)
+
+    return ld
